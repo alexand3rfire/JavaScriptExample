@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расписание</title>
+</head>
+<body>
+        
+    <script>
+        function saveToLocalStorage() {
+            let allTasks = JSON.stringify(myTasks);
+            console.log(allTasks);
+            localStorage.setItem('tasks', allTasks);
+        }
+        function loadFromLocalStorage() {
+            let allTasks = localStorage.getItem('tasks');
+            myTasks = JSON.parse(allTasks);
+        }
+        function addTask(e) {
+            e.preventDefault();
+            let newTitle = document.getElementById('title').value;
+            let newYear = document.getElementById('year').value;
+            let newMonth = document.getElementById('month').value;
+            let newDay = document.getElementById('day').value;
+            newTask = {
+                id: 0,
+                title: newTitle,
+                date: {
+                    day: newDay,
+                    month: newMonth,
+                    year: newYear
+                },
+                status: 'В процессе'
+            }
+            myTasks.push(newTask);
+            console.log("Всего задач: " + myTasks.length);
+            saveToLocalStorage();
+            showForm();
+            showTasks();
+        }
+        function showForm() {
+            document.write(`<h1>Расписание задач</h1>
+            <form>
+                <input type="text" name="title" id="title" placeholder="Название задачи" />
+                <input type="number" name="year" id="year" placeholder="Год"/>
+                <input type="number" name="month" id="month" placeholder="Месяц"/>
+                <input type="number" name="day" id="day" placeholder="День"/>
+                <button type="submit" onclick="addTask(event)">Добавить задачу</button>
+                <button type="submit" onclick="closeTask(event);">Готово</button>
+            </form>`);
+        }
+
+        function showTasks() {
+     let years = [2023, 2024, 2025];
+     let monthsName = ['Январь', 'Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+     let lastDays =    [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+     let lastDaysVis = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]; 
+     let isVis = false;
+     let yearV = 2024;
+     for(let y = 0; y < 3; y++) {
+        if (years[y] % 4 == 0) {
+            document.write("<h1>Високосный год: " + years[y] + "</h1>\n");    
+        } else {
+            document.write("<h1>Год: " + years[y] + "</h1>\n");
+        }
+        for(let m = 1; m <= 12; m++) {
+            document.write("<h2>Месяц: " + monthsName[m - 1] + "</h2>\n");
+            if (years[y] == yearV && m == 2) {
+                var lastDay = lastDaysVis[m - 1];
+            } else {
+                var lastDay = lastDays[m - 1];
+            }
+            for (let i = 1; i <= lastDay; i++) {
+                //console.log(i)
+                document.write(i + ': ');
+                for(let t = 0; t < myTasks.length; t++) {
+                    if (myTasks[t].date.day == i &&
+                        myTasks[t].date.month == m &&
+                        myTasks[t].date.year == years[y]) {
+                            document.write("<b>" + myTasks[t].title + " - " + myTasks[t].status + "</b>");
+                    }
+                }
+                document.write('<br>');
+            };
+        }
+     }
+    }
+        function closeTask(e) {
+            let newTitle = document.getElementById('title').value;
+            let newYear = document.getElementById('year').value;
+            let newMonth = document.getElementById('month').value;
+            let newDay = document.getElementById('day').value;
+            for (let i = 0; i < myTasks.length; i++) {
+                if (myTasks[i].date.day == newDay && 
+                    myTasks[i].date.month == newMonth &&
+                    myTasks[i].date.year == newYear) {
+                        myTasks[i].status = 'Завершено';
+                        break;
+                    }
+            }
+            saveToLocalStorage();
+            showForm();
+            showTasks();
+        }
+        let oneTask = {
+            id: 1,
+            title: 'Задача',
+            date: {
+                day: 18,
+                month: 6,
+                year: 2024
+            },
+            status: 'В процессе'
+        };
+        console.log(oneTask);
+    
+    let myTasks = [];
+    
+    loadFromLocalStorage();
+    showForm();
+    showTasks();
+    </script>
+</body>
+</html>
